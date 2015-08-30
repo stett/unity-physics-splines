@@ -112,8 +112,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children:
-  - {fileID: 1450342055}
+  m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 2
 --- !u!114 &618977620
@@ -129,9 +128,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   vertexes:
   - {x: -1, y: 1, z: 0}
-  - {x: -.699999988, y: .200000003, z: 0}
-  - {x: 0, y: 0, z: 0}
-  - {x: .699999988, y: .200000003, z: 0}
+  - {x: -.800000012, y: .300000012, z: 0}
+  - {x: -.300000012, y: 0, z: 0}
+  - {x: .300000012, y: 0, z: 0}
+  - {x: .800000012, y: .300000012, z: 0}
   - {x: 1, y: 1, z: 0}
 --- !u!1 &1450342051
 GameObject:
@@ -144,6 +144,9 @@ GameObject:
   - 33: {fileID: 1450342054}
   - 135: {fileID: 1450342053}
   - 23: {fileID: 1450342052}
+  - 114: {fileID: 1450342056}
+  - 54: {fileID: 1450342057}
+  - 114: {fileID: 1450342058}
   m_Layer: 0
   m_Name: Sphere
   m_TagString: Untagged
@@ -201,11 +204,50 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1450342051}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: .773000002, y: .836000025, z: 0}
+  m_LocalPosition: {x: -.870000005, y: .949999988, z: 0}
   m_LocalScale: {x: .331402361, y: .331402123, z: .331402123}
   m_Children: []
-  m_Father: {fileID: 618977619}
-  m_RootOrder: 0
+  m_Father: {fileID: 0}
+  m_RootOrder: 3
+--- !u!114 &1450342056
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1450342051}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8328b408aa7f3644383cacb280a6f048, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spline: {fileID: 618977620}
+--- !u!54 &1450342057
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1450342051}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: .100000001
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
+--- !u!114 &1450342058
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1450342051}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9bcf1624957ffa41be37585b37e8e0f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  velocity: {x: 0, y: -1, z: 0}
 --- !u!1 &2036483638
 GameObject:
   m_ObjectHideFlags: 0
@@ -324,7 +366,7 @@ Camera:
     height: 1
   near clip plane: .300000012
   far clip plane: 1000
-  field of view: 60
+  field of view: 22
   orthographic: 0
   orthographic size: 5
   m_Depth: -1

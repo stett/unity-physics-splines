@@ -4,8 +4,15 @@ using System.Collections;
 public class SplineConstraint : MonoBehaviour {
 
 	public SplineData spline;
-	int vertex_id = 0;
-	float vertex_position;
+	Rigidbody body;
+	int   	vertex_id = 0;
+	float 	vertex_position;
+	Vector3 vertex_normal;
+
+	// Initialize
+	void Start() {
+		body = GetComponent<Rigidbody> ();
+	}
 
 	// Update is called once per frame
 	void Update () {
@@ -30,6 +37,7 @@ public class SplineConstraint : MonoBehaviour {
 					min_dist = dist;
 					vertex_id = i-1;
 					vertex_position = 0.0f;
+					vertex_normal = (v1 - v0).normalized;
 				}
 			} else {
 				float t = Vector3.Dot (transform.position - v0, v1 - v0) / seg_len_sq;
@@ -42,6 +50,7 @@ public class SplineConstraint : MonoBehaviour {
 						min_dist = dist;
 						vertex_id = i-1;
 						vertex_position = 0.0f;
+						vertex_normal = (v1 - v0).normalized;
 					}
 					
 				// If we are past the last vertex, same deal.
@@ -51,6 +60,7 @@ public class SplineConstraint : MonoBehaviour {
 						min_dist = dist;
 						vertex_id = i-1;
 						vertex_position = 1.0f;
+						vertex_normal = (v1 - v0).normalized;
 					}
 					
 				// We're right in the sweet spot.
@@ -62,16 +72,21 @@ public class SplineConstraint : MonoBehaviour {
 						min_dist = dist;
 						vertex_id = i-1;
 						vertex_position = t;
+						vertex_normal = (v1 - v0).normalized;
 					}
 				}
 			}
 		}
 	}
 
-	// Constrain the position to the vertex,
-	// and counteract forces that oppose it.
+	// Constrain the position to the vertex, and limit the velocity to the direction of the path
 	void ApplyConstraint() {
 		FindNearestVertex ();
+
+		// Limit the velocity
+		body.velocity = vertex_normal * Vector3.Dot (body.velocity, vertex_normal);
+
+		// Limit the position
 		transform.position = GetVertexWorldPosition ();
 	}
 
