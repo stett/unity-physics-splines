@@ -23,7 +23,7 @@ public class SplineConstraint : MonoBehaviour {
 	// Find the closest spline vertex id and position
 	void FindNearestVertex() {
 		float min_dist = Mathf.Infinity;
-		for (int i = 1; i < spline.vertexes.Length; i ++) {
+		for (int i = 1; i < spline.vertexes.Count; i ++) {
 			float dist = min_dist;
 			Vector3 v0 = spline.transform.TransformPoint (spline.vertexes[i-1]);
 			Vector3 v1 = spline.transform.TransformPoint (spline.vertexes[i]);
@@ -100,7 +100,7 @@ public class SplineConstraint : MonoBehaviour {
 	// Draw the segment from here to the path we're going to jump to
 	void OnDrawGizmos() {
 		FindNearestVertex ();
-		Gizmos.color = new Color (1.0f, 0.5f, 0.2f);
+		Gizmos.color = new Color (1.0f, 1.0f, 1.0f, 0.5f);
 		Gizmos.DrawLine (transform.position, GetVertexWorldPosition());
 	}
 }
