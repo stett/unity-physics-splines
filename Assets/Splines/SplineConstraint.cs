@@ -1,10 +1,11 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 public class SplineConstraint : MonoBehaviour {
 
 	public SplineData spline;
 	Rigidbody body;
+	ConfigurableJoint joint;
 	int   	vertex_id = 0;
 	float 	vertex_position;
 	Vector3 vertex_normal;
@@ -12,10 +13,20 @@ public class SplineConstraint : MonoBehaviour {
 	// Initialize
 	void Start() {
 		body = GetComponent<Rigidbody> ();
+		joint = gameObject.AddComponent<ConfigurableJoint> ();
+		joint.anchor = new Vector3 (0, 0, 0);
+		joint.autoConfigureConnectedAnchor = false;
+		joint.xMotion = ConfigurableJointMotion.Free;
+		joint.yMotion = ConfigurableJointMotion.Locked;
+		joint.zMotion = ConfigurableJointMotion.Locked;
+		joint.angularXMotion = ConfigurableJointMotion.Locked;
+		joint.angularYMotion = ConfigurableJointMotion.Locked;
+		joint.angularZMotion = ConfigurableJointMotion.Locked;
+
 	}
 
 	// Update is called once per frame
-	void Update () {
+	void FixedUpdate () {
 		ApplyConstraint ();
 	}
 
@@ -88,11 +99,15 @@ public class SplineConstraint : MonoBehaviour {
 		FindNearestVertex ();
 
 		// Limit the position
-		transform.position = spline.transform.TransformPoint (spline.Interpolate (vertex_id, vertex_position));
+		//transform.position = spline.transform.TransformPoint (spline.Interpolate (vertex_id, vertex_position));
 
 		// Limit the velocity
-		vertex_normal = spline.transform.TransformPoint (spline.InterpolateNormal (vertex_id, vertex_position)).normalized;
-		body.velocity = vertex_normal * Vector3.Dot (body.velocity, vertex_normal);
+		//vertex_normal = spline.transform.TransformPoint (spline.InterpolateNormal (vertex_id, vertex_position)).normalized;
+		//body.velocity = vertex_normal * Vector3.Dot (body.velocity, vertex_normal);
+
+		// Update the joint axis
+		joint.connectedAnchor = spline.transform.TransformPoint (spline.Interpolate (vertex_id, vertex_position));
+		joint.axis = spline.transform.TransformPoint (spline.InterpolateNormal (vertex_id, vertex_position));
 	}
 
 	// Draw the segment from here to the path we're going to jump to
@@ -101,9 +116,9 @@ public class SplineConstraint : MonoBehaviour {
 		Gizmos.color = new Color (1.0f, 1.0f, 1.0f, 0.5f);
 
 		Vector3 pos = spline.transform.TransformPoint (spline.Interpolate (vertex_id, vertex_position));
-		Vector3 norm = spline.transform.TransformPoint (spline.InterpolateNormal (vertex_id, vertex_position)).normalized;
+		Vector3 norm = spline.transform.TransformPoint (spline.InterpolateNormal (vertex_id, vertex_position));
 
 		Gizmos.DrawLine (transform.position, pos);
-		Gizmos.DrawLine (pos, norm);
+		Gizmos.DrawLine (pos, pos + norm);
 	}
 }
