@@ -8,7 +8,6 @@ public class SplineConstraint : MonoBehaviour {
 	ConfigurableJoint joint;
 	int   	vertex_id = 0;
 	float 	vertex_position;
-	Vector3 vertex_normal;
 
 	// Initialize
 	void Start() {
@@ -47,7 +46,6 @@ public class SplineConstraint : MonoBehaviour {
 					min_dist = dist;
 					vertex_id = i-1;
 					vertex_position = 0.0f;
-					//vertex_normal = (v1 - v0).normalized;
 				}
 			} else {
 				float t = Vector3.Dot (transform.position - v0, v1 - v0) / seg_len_sq;
@@ -60,7 +58,6 @@ public class SplineConstraint : MonoBehaviour {
 						min_dist = dist;
 						vertex_id = i-1;
 						vertex_position = 0.0f;
-						//vertex_normal = (v1 - v0).normalized;
 					}
 					
 				// If we are past the last vertex, same deal.
@@ -70,7 +67,6 @@ public class SplineConstraint : MonoBehaviour {
 						min_dist = dist;
 						vertex_id = i-1;
 						vertex_position = 1.0f;
-						//vertex_normal = (v1 - v0).normalized;
 					}
 					
 				// We're right in the sweet spot.
@@ -82,13 +78,10 @@ public class SplineConstraint : MonoBehaviour {
 						min_dist = dist;
 						vertex_id = i-1;
 						vertex_position = t;
-						//vertex_normal = (v1 - v0).normalized;
 					}
 				}
 			}
 		}
-
-		// Compute the normal along the spline
 
 	}
 
@@ -97,13 +90,6 @@ public class SplineConstraint : MonoBehaviour {
 
 		// Update the vertex we should be on
 		FindNearestVertex ();
-
-		// Limit the position
-		//transform.position = spline.transform.TransformPoint (spline.Interpolate (vertex_id, vertex_position));
-
-		// Limit the velocity
-		//vertex_normal = spline.transform.TransformPoint (spline.InterpolateNormal (vertex_id, vertex_position)).normalized;
-		//body.velocity = vertex_normal * Vector3.Dot (body.velocity, vertex_normal);
 
 		// Update the joint axis
 		joint.connectedAnchor = spline.transform.TransformPoint (spline.Interpolate (vertex_id, vertex_position));
