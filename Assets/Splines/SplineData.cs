@@ -21,26 +21,17 @@ public class SplineData : MonoBehaviour {
 	// Generate tangents if needed
 	void GenerateTangents() {
 
-		// TEMP
-		tangents.Clear ();
-
 		// If there aren't enough defined tangents, fill them in
 		if (tangents.Count < vertexes.Count && vertexes.Count > 0) {
 			for (int i = tangents.Count; i < vertexes.Count; i ++) {
 
 				if (i == 0) {
-					tangents.Add ((vertexes[i+1] - vertexes[i]) * .25f);
-				} else if (i > 0 && i < vertexes.Count - 1) {
-					tangents.Add ((vertexes[i+1] - vertexes[i-1]) * .33f);
-				} else {
-					tangents.Add ((vertexes[i] - vertexes[i-1]) * .25f);
-				}
-
-				/*if (i < vertexes.Count - 1)
 					tangents.Add ((vertexes[i+1] - vertexes[i]) * .5f);
-				else
+				} else if (i > 0 && i < vertexes.Count - 1) {
+					tangents.Add ((vertexes[i+1] - vertexes[i-1]) * .5f);
+				} else {
 					tangents.Add ((vertexes[i] - vertexes[i-1]) * .5f);
-				*/
+				}
 			}
 		}
 
@@ -78,17 +69,35 @@ public class SplineData : MonoBehaviour {
 			// Draw the interpolated segment
 			Vector3 p0 = v0;
 			Vector3 p1;
+			int segments = 10;
 			Gizmos.color = new Color (0.5f, 1.0f, 0.7f);
-			for (float t = 0.1f; t <= 1.1f; t += 0.1f) {
+			for (int ii = 1; ii <= segments; ii ++) {
+				float t = (float)ii / (float)segments;
 				float t2 = t*t;
 				float t3 = t*t2;
-				p1 = (2*t3 - 3*t2 + 1) * v0
-				   + (t3 - 2*t2 + t) * tangents[i-1]
-				   + (-2*t3 + 3*t2) * v1
-				   + (t3 - t2) * tangents[i];
+				p1 = transform.TransformPoint (Interpolate (i-1, t));
 				Gizmos.DrawLine (p0, p1);
 				p0 = p1;
 			}
 		}
+	}
+	
+	// Get an interpolated point
+	public Vector3 Interpolate(int i, float t) {
+		float t2 = t*t;
+		float t3 = t*t2;
+		return (2*t3 - 3*t2 + 1) * vertexes[i]
+			 + (t3 - 2*t2 + t) * tangents[i]
+			 + (-2*t3 + 3*t2) * vertexes[i+1]
+		     + (t3 - t2) * tangents[i+1];
+	}
+
+	// Get the tangent normal vector at a point on the spline
+	public Vector3 InterpolateNormal(int i, float t) {
+		float t2 = t*t;
+		return ((6*t2 - 6*t) * vertexes[i]
+		      + (3*t2 - 4*t + 1) * tangents[i]
+		      + (-6*t2 + 6*t) * vertexes[i+1]
+		      + (3*t2 - 2*t) * tangents[i+1]).normalized;
 	}
 }

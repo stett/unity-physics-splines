@@ -17,7 +17,6 @@ public class SplineConstraint : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		ApplyConstraint ();
-		Debug.DrawLine (transform.position, GetVertexWorldPosition ());
 	}
 
 	// Find the closest spline vertex id and position
@@ -37,7 +36,7 @@ public class SplineConstraint : MonoBehaviour {
 					min_dist = dist;
 					vertex_id = i-1;
 					vertex_position = 0.0f;
-					vertex_normal = (v1 - v0).normalized;
+					//vertex_normal = (v1 - v0).normalized;
 				}
 			} else {
 				float t = Vector3.Dot (transform.position - v0, v1 - v0) / seg_len_sq;
@@ -50,7 +49,7 @@ public class SplineConstraint : MonoBehaviour {
 						min_dist = dist;
 						vertex_id = i-1;
 						vertex_position = 0.0f;
-						vertex_normal = (v1 - v0).normalized;
+						//vertex_normal = (v1 - v0).normalized;
 					}
 					
 				// If we are past the last vertex, same deal.
@@ -60,7 +59,7 @@ public class SplineConstraint : MonoBehaviour {
 						min_dist = dist;
 						vertex_id = i-1;
 						vertex_position = 1.0f;
-						vertex_normal = (v1 - v0).normalized;
+						//vertex_normal = (v1 - v0).normalized;
 					}
 					
 				// We're right in the sweet spot.
@@ -72,35 +71,39 @@ public class SplineConstraint : MonoBehaviour {
 						min_dist = dist;
 						vertex_id = i-1;
 						vertex_position = t;
-						vertex_normal = (v1 - v0).normalized;
+						//vertex_normal = (v1 - v0).normalized;
 					}
 				}
 			}
 		}
+
+		// Compute the normal along the spline
+
 	}
 
 	// Constrain the position to the vertex, and limit the velocity to the direction of the path
 	void ApplyConstraint() {
+
+		// Update the vertex we should be on
 		FindNearestVertex ();
 
-		// Limit the velocity
-		body.velocity = vertex_normal * Vector3.Dot (body.velocity, vertex_normal);
-
 		// Limit the position
-		transform.position = GetVertexWorldPosition ();
-	}
+		transform.position = spline.transform.TransformPoint (spline.Interpolate (vertex_id, vertex_position));
 
-	// Get the world coordinates position on the vertex
-	Vector3 GetVertexWorldPosition() {
-		Vector3 v0 = spline.transform.TransformPoint (spline.vertexes[vertex_id]);
-		Vector3 v1 = spline.transform.TransformPoint (spline.vertexes[vertex_id + 1]);
-		return v0 + vertex_position * (v1 - v0);
+		// Limit the velocity
+		vertex_normal = spline.transform.TransformPoint (spline.InterpolateNormal (vertex_id, vertex_position)).normalized;
+		body.velocity = vertex_normal * Vector3.Dot (body.velocity, vertex_normal);
 	}
 
 	// Draw the segment from here to the path we're going to jump to
 	void OnDrawGizmos() {
 		FindNearestVertex ();
 		Gizmos.color = new Color (1.0f, 1.0f, 1.0f, 0.5f);
-		Gizmos.DrawLine (transform.position, GetVertexWorldPosition());
+
+		Vector3 pos = spline.transform.TransformPoint (spline.Interpolate (vertex_id, vertex_position));
+		Vector3 norm = spline.transform.TransformPoint (spline.InterpolateNormal (vertex_id, vertex_position)).normalized;
+
+		Gizmos.DrawLine (transform.position, pos);
+		Gizmos.DrawLine (pos, norm);
 	}
 }
